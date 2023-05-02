@@ -11,27 +11,37 @@ type Adapter interface {
 	ListImages(req ListImageRequest) ([]Image, error)
 }
 
-func NewAdapter(apiKey string) (*adapter, error) {
+func NewAdapter(apiKey string) (Adapter, error) {
 	adt := &adapter{
 		apiKey: apiKey,
 	}
 	return adt, nil
 }
 
+type ListImageRequest struct {
+	Page    int
+	PerPage int
+	OrderBy string
+}
+
 func (adt adapter) ListImages(req ListImageRequest) ([]Image, error) {
 
-	link1 := fmt.Sprintf("https://api.unsplash.com/photos?client_id=%v&page=%v&per_page=%v&order_by=%v", adt.apiKey, req.Page, req.Per_page, req.Order_by)
-	res, err := http.Get(link1)
+	url := fmt.Sprintf("https://api.unsplash.com/photos?client_id=%v&page=%v&per_page=%v&order_by=%v", adt.apiKey, req.Page, req.PerPage, req.OrderBy)
+	res, err := http.Get(url)
+
+	if err != nil {
+
+		return nil, err
+	}
+
+	body, err := io.ReadAll(res.Body)
 	defer res.Body.Close()
 	if err != nil {
-		panic(err)
-	}
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		panic(err)
+
+		return nil, err
 	}
 	var images = make([]Image, 0)
-	err = json.Unmarshal([]byte(body), &images)
+	err = json.Unmarshal(body, &images)
 	if err != nil {
 		return nil, err
 	}

@@ -13,8 +13,3 @@ type Image struct {
 type adapter struct {
 	apiKey string
 }
-type ListImageRequest struct {
-	Page     int
-	Per_page int
-	Order_by string
-}
