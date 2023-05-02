@@ -6,12 +6,15 @@ type Urls struct {
 	Regular string `json:"regular"`
 }
 type Image struct {
-	Description string `json:"description"`
-
-	Urls  Urls `json:"urls"`
-	Likes int  `json:"likes"`
+	AltDescription string `json:"alt_description"`
+	Urls           Urls   `json:"urls"`
+	Likes          int    `json:"likes"`
 }
-type InfoLink struct {
-	page     int
-	per_page int
+type adapter struct {
+	apiKey string
+}
+type ListImageRequest struct {
+	Page     int
+	Per_page int
+	Order_by string
 }
