@@ -4,16 +4,32 @@ import (
 	"fmt"
 	"gin_unsplash/adapter"
 	_ "gin_unsplash/adapter"
+	"gin_unsplash/config"
+	"github.com/joho/godotenv"
+	"github.com/kelseyhightower/envconfig"
+	_ "github.com/kelseyhightower/envconfig"
+	"log"
 )
 
 func main() {
-	var listImgReq = adapter.ListImageRequest{1, 5, "popular"}
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	var unsplashConfig config.UnsplashConfig
+	if err := envconfig.Process("", &unsplashConfig); err != nil {
+		panic(err)
+	}
 
-	apiKey := "eHYWuHQhaaeo6b-EQ3HNjMQxuabrhYdUdUE57pxs_M8"
-	unsplashAdapter, err := adapter.NewAdapter(apiKey)
+	unsplashAdapter, err := adapter.NewAdapter(unsplashConfig.APIKey)
 	if err != nil {
 		panic(err)
 	}
+
+	listImgReq := adapter.ListImageRequest{
+		Page:    1,
+		PerPage: 5,
+		OrderBy: "popular"}
 	images, err := unsplashAdapter.ListImages(listImgReq)
 	if err != nil {
 		panic(err)

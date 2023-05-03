@@ -10,6 +10,8 @@ type Image struct {
 	Urls           Urls   `json:"urls"`
 	Likes          int    `json:"likes"`
 }
-type adapter struct {
-	apiKey string
+type ListImageRequest struct {
+	Page    int
+	PerPage int
+	OrderBy string
 }

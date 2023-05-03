@@ -12,18 +12,15 @@ type Adapter interface {
 	GetRandomImage() (*Image, error)
 	GetImageById(id string) (*Image, error)
 }
+type adapter struct {
+	apiKey string
+}
 
 func NewAdapter(apiKey string) (Adapter, error) {
 	adt := &adapter{
 		apiKey: apiKey,
 	}
 	return adt, nil
-}
-
-type ListImageRequest struct {
-	Page    int
-	PerPage int
-	OrderBy string
 }
 
 func (adt adapter) ListImages(req ListImageRequest) ([]Image, error) {
