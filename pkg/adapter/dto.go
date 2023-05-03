@@ -5,12 +5,18 @@ type Urls struct {
 	Full    string `json:"full"`
 	Regular string `json:"regular"`
 }
-type Image struct {
+type Photo struct {
+	ID             string `json:"id"`
+	CreatedAt      string `json:"created_at"`
+	UpdatedAt      string `json:"updated_at"`
+	Width          int    `json:"width"`
+	Height         int    `json:"height"`
+	Description    string `json:"description"`
 	AltDescription string `json:"alt_description"`
 	Urls           Urls   `json:"urls"`
 	Likes          int    `json:"likes"`
 }
-type ListImageRequest struct {
+type ListPhotoRequest struct {
 	Page    int
 	PerPage int
 	OrderBy string
