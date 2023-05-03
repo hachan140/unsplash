@@ -66,4 +66,5 @@ func main() {
 		panic(err)
 	}
 
+	// #TODO: get all photo in db and print its url
 }
