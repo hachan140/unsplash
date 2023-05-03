@@ -26,3 +26,6 @@ func (p *photoRepository) Insert(ctx context.Context, data *model.Photo) error {
 	}
 	return nil
 }
+
+// #TODO: implement FindOneByID and FindMany function for repository
+// FindMany param: page, limit
