@@ -8,8 +8,8 @@ import (
 
 type PhotoRepository interface {
 	Insert(ctx context.Context, data *model.Photo) error
-	FindOneByID(ctx context.Context, id string) *model.Photo
-	FindAllPhotos(ctx context.Context, page int, limit int) []model.Photo
+	FindOneByID(ctx context.Context, id string) (*model.Photo, error)
+	FindAllPhotos(ctx context.Context, page int, limit int) ([]model.Photo, error)
 }
 
 type photoRepository struct {
@@ -32,16 +32,19 @@ func (p *photoRepository) Insert(ctx context.Context, data *model.Photo) error {
 // #TODO: implement FindOneByID and FindMany function for repository
 // FindMany param: page, limit
 
-func (p *photoRepository) FindOneByID(ctx context.Context, id string) *model.Photo {
+func (p *photoRepository) FindOneByID(ctx context.Context, id string) (*model.Photo, error) {
 	var photo model.Photo
-	p.db.WithContext(ctx).First(&photo, "id = ?", id)
-	return &photo
+	if err := p.db.WithContext(ctx).First(&photo, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return &photo, nil
 }
 
-func (p *photoRepository) FindAllPhotos(ctx context.Context, page int, limit int) []model.Photo {
-	offset := (page-1)*limit + 1
+func (p *photoRepository) FindAllPhotos(ctx context.Context, page int, limit int) ([]model.Photo, error) {
+	offset := (page - 1) * limit
 	var photos []model.Photo
-	p.db.WithContext(ctx).Offset(offset).Limit(limit).Find(&photos)
-	return photos
-
+	if err := p.db.WithContext(ctx).Offset(offset).Limit(limit).Find(&photos).Error; err != nil {
+		return nil, err
+	}
+	return photos, nil
 }
