@@ -8,6 +8,8 @@ import (
 
 type PhotoRepository interface {
 	Insert(ctx context.Context, data *model.Photo) error
+	FindOneByID(ctx context.Context, id string) *model.Photo
+	FindAllPhotos(ctx context.Context) []model.Photo
 }
 
 type photoRepository struct {
@@ -29,3 +31,16 @@ func (p *photoRepository) Insert(ctx context.Context, data *model.Photo) error {
 
 // #TODO: implement FindOneByID and FindMany function for repository
 // FindMany param: page, limit
+
+func (p *photoRepository) FindOneByID(ctx context.Context, id string) *model.Photo {
+	var photo model.Photo
+	p.db.WithContext(ctx).First(&photo, "id = ?", id)
+	return &photo
+}
+
+func (p *photoRepository) FindAllPhotos(ctx context.Context) []model.Photo {
+	var photos []model.Photo
+	p.db.WithContext(ctx).Find(&photos)
+	return photos
+
+}

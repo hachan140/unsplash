@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"gin_unsplash/pkg/adapter"
 	"gin_unsplash/pkg/config"
 	"gin_unsplash/pkg/connection"
@@ -45,26 +46,37 @@ func main() {
 
 	photoRepo := repository.NewPhotoRepository(db)
 
-	photo, err := unsplashAdapter.GetRandomPhoto()
-	if err != nil {
-		panic(err)
+	for i := 1; i <= 10; i++ {
+		photo_, err := unsplashAdapter.GetRandomPhoto()
+
+		if err != nil {
+			panic(err)
+		}
+		photoModel_ := &model.Photo{
+			ID:             photo_.ID,
+			CreatedAt:      photo_.CreatedAt,
+			UpdatedAt:      photo_.UpdatedAt,
+			Width:          photo_.Width,
+			Height:         photo_.Height,
+			Url:            photo_.Urls.Raw,
+			Description:    photo_.Description,
+			AltDescription: photo_.AltDescription,
+			Likes:          photo_.Likes,
+		}
+
+		if err := photoRepo.Insert(ctx, photoModel_); err != nil {
+			panic(err)
+		}
 	}
 
-	photoModel := &model.Photo{
-		ID:             photo.ID,
-		CreatedAt:      photo.CreatedAt,
-		UpdatedAt:      photo.UpdatedAt,
-		Width:          photo.Width,
-		Height:         photo.Height,
-		Url:            photo.Urls.Raw,
-		Description:    photo.Description,
-		AltDescription: photo.AltDescription,
-		Likes:          photo.Likes,
-	}
-
-	if err := photoRepo.Insert(ctx, photoModel); err != nil {
-		panic(err)
-	}
+	fmt.Println("---Get one by ID---")
+	fmt.Println(photoRepo.FindOneByID(ctx, "-HprBtc9dWY").Url)
 
 	// #TODO: get all photo in db and print its url
+
+	allPhotos := photoRepo.FindAllPhotos(ctx)
+	fmt.Println("---All Photo Url---")
+	for _, photo := range allPhotos {
+		fmt.Println(photo.Url)
+	}
 }
