@@ -9,7 +9,7 @@ import (
 type PhotoRepository interface {
 	Insert(ctx context.Context, data *model.Photo) error
 	FindOneByID(ctx context.Context, id string) (*model.Photo, error)
-	FindAllPhotos(ctx context.Context, page int, limit int) ([]model.Photo, error)
+	FindAllPhotos(ctx context.Context, page int, limit int) ([]*model.Photo, error)
 }
 
 type photoRepository struct {
@@ -34,15 +34,15 @@ func (p *photoRepository) Insert(ctx context.Context, data *model.Photo) error {
 
 func (p *photoRepository) FindOneByID(ctx context.Context, id string) (*model.Photo, error) {
 	var photo model.Photo
-	if err := p.db.WithContext(ctx).First(&photo, "id = ?", id).Error; err != nil {
+	if err := p.db.WithContext(ctx).Where("id=?", id).First(&photo).Error; err != nil {
 		return nil, err
 	}
 	return &photo, nil
 }
 
-func (p *photoRepository) FindAllPhotos(ctx context.Context, page int, limit int) ([]model.Photo, error) {
+func (p *photoRepository) FindAllPhotos(ctx context.Context, page int, limit int) ([]*model.Photo, error) {
 	offset := (page - 1) * limit
-	var photos []model.Photo
+	var photos []*model.Photo
 	if err := p.db.WithContext(ctx).Offset(offset).Limit(limit).Find(&photos).Error; err != nil {
 		return nil, err
 	}
