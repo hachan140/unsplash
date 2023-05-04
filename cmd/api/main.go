@@ -19,6 +19,17 @@ func init() {
 	}
 }
 
+/*
+TODO:
+taọ provider cho service, controller, config
+
+
+tạo 1 model user gồm id, username, password, fullname, phone_number, created_at, updated_at
+tạo repository tương ứng gôm Insert, FindByID, FindByUsername, FindMany
+tạo service và controller tương ứng gồm các function: CreateUser ( username, phone_number unique ), ListUser search like username
+
+*/
+
 func main() {
 
 	var mysqlConfig config.MySQL
