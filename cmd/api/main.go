@@ -74,7 +74,7 @@ func main() {
 
 	// #TODO: get all photo in db and print its url
 
-	allPhotos := photoRepo.FindAllPhotos(ctx)
+	allPhotos := photoRepo.FindAllPhotos(ctx, 1, 5)
 	fmt.Println("---All Photo Url---")
 	for _, photo := range allPhotos {
 		fmt.Println(photo.Url)
