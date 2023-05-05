@@ -1,12 +1,14 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"gin_unsplash/cmd/api/controller"
+	"gin_unsplash/pkg/adapter/unsplash"
 	"gin_unsplash/pkg/config"
 	"gin_unsplash/pkg/connection"
 	"gin_unsplash/pkg/model"
 	"gin_unsplash/pkg/repository"
+	"gin_unsplash/pkg/service"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -18,7 +20,6 @@ func init() {
 }
 
 func main() {
-	ctx := context.Background()
 
 	var unsplashConfig config.UnsplashConfig
 	if err := envconfig.Process("", &unsplashConfig); err != nil {
@@ -28,61 +29,20 @@ func main() {
 	if err := envconfig.Process("", &mysqlConfig); err != nil {
 		panic(err)
 	}
-
-	//unsplashAdapter, err := adapter.NewAdapter(unsplashConfig.APIKey)
-	//if err != nil {
-	//	panic(err)
-	//}
-
 	db, err := connection.NewMySQLConnection(mysqlConfig)
 	if err != nil {
 		panic(err)
 	}
-
 	if err := db.AutoMigrate(model.Photo{}); err != nil {
 		panic(err)
 	}
-
 	photoRepo := repository.NewPhotoRepository(db)
+	unsplashAdapter, _ := unsplash.NewAdapter(unsplashConfig.APIKey)
+	photoService := service.NewPhotoService(photoRepo, unsplashAdapter)
+	photoController := controller.NewPhotoController(photoService)
+	route := gin.Default()
+	route.GET("/api/photos", photoController.ListPhotos)
+	route.POST("/api/photos/fetch-unsplash", photoController.FetchUnsplashPhotos)
+	route.Run(":8080")
 
-	//for i := 1; i <= 10; i++ {
-	//	photo_, err := unsplashAdapter.GetRandomPhoto()
-	//
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//	photoModel_ := &model.Photo{
-	//		ID:             photo_.ID,
-	//		CreatedAt:      photo_.CreatedAt,
-	//		UpdatedAt:      photo_.UpdatedAt,
-	//		Width:          photo_.Width,
-	//		Height:         photo_.Height,
-	//		Url:            photo_.Urls.Raw,
-	//		Description:    photo_.Description,
-	//		AltDescription: photo_.AltDescription,
-	//		Likes:          photo_.Likes,
-	//	}
-	//
-	//	if err := photoRepo.Insert(ctx, photoModel_); err != nil {
-	//		panic(err)
-	//	}
-	//}
-
-	fmt.Println("---Get one by ID---")
-	photoByID, err := photoRepo.FindOneByID(ctx, "-HprBtc9dWY")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(photoByID.Url)
-
-	// #TODO: get all photo in db and print its url
-	allPhotos, err := photoRepo.FindAllPhotos(ctx, 2, 5)
-	if err != nil {
-		panic(err)
-
-	}
-	fmt.Println("---All Photo Url---")
-	for _, photo := range allPhotos {
-		fmt.Println(photo.AltDescription)
-	}
 }

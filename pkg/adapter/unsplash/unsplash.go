@@ -1,4 +1,4 @@
-package adapter
+package unsplash
 
 import (
 	"encoding/json"
