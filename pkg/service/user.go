@@ -6,6 +6,7 @@ import (
 	"gin_unsplash/pkg/mapper"
 	"gin_unsplash/pkg/model"
 	"gin_unsplash/pkg/repository"
+	"gorm.io/gorm"
 )
 
 type userService struct {
@@ -22,6 +23,16 @@ func NewUserService(repoProvider repository.Provider) UserService {
 }
 
 func (u *userService) CreateUser(ctx context.Context, req dto.CreateUserRequest) (*dto.CreateUserResponse, error) {
+	_, err := u.userRepo.FindUserByUsername(ctx, req.Username)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	if err == nil {
+		return &dto.CreateUserResponse{
+			Data:    nil,
+			Message: "duplicate username",
+		}, nil
+	}
 	user := &model.User{
 
 		Username:    req.Username,

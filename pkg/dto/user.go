@@ -19,6 +19,6 @@ type CreateUserRequest struct {
 	PhoneNumber string `json:"phone_number"`
 }
 type CreateUserResponse struct {
-	Data    *User
-	Message string
+	Data    *User  `json:"data"`
+	Message string `json:"message"`
 }
