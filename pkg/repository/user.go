@@ -4,12 +4,14 @@ import (
 	"context"
 	"gin_unsplash/pkg/model"
 	"gorm.io/gorm"
+	"time"
 )
 
 type userRepository struct {
 	db *gorm.DB
 }
 type UserRepository interface {
+	Insert(ctx context.Context, data *model.User) error
 }
 
 func NewUserRepo(db *gorm.DB) UserRepository {
@@ -18,6 +20,8 @@ func NewUserRepo(db *gorm.DB) UserRepository {
 	}
 }
 func (u *userRepository) Insert(ctx context.Context, data *model.User) error {
+	data.CreatedAt = time.Now()
+	data.UpdatedAt = time.Now()
 	if err := u.db.WithContext(ctx).Model(data).Create(data).Error; err != nil {
 		return err
 	}

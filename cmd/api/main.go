@@ -10,7 +10,6 @@ import (
 	"gin_unsplash/pkg/service"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/kelseyhightower/envconfig"
 )
 
 func init() {
@@ -32,22 +31,13 @@ tạo service và controller tương ứng gồm các function: CreateUser ( use
 
 func main() {
 
-	var mysqlConfig config.MySQL
-	if err := envconfig.Process("", &mysqlConfig); err != nil {
-		panic(err)
-	}
-
-	var unsplashConfig config.UnsplashConfig
-	if err := envconfig.Process("", &unsplashConfig); err != nil {
-		panic(err)
-	}
-
-	unsplashAdapter, err := unsplash.NewAdapter(unsplashConfig.APIKey)
+	configProvider := config.NewConfigProvider()
+	unsplashAdapter, err := unsplash.NewAdapter(configProvider.UnsplashConfig().APIKey)
 	if err != nil {
 		panic(err)
 	}
 
-	db, err := connection.NewMySQLConnection(mysqlConfig)
+	db, err := connection.NewMySQLConnection(configProvider.MySQL())
 	if err != nil {
 		panic(err)
 	}
@@ -64,7 +54,6 @@ func main() {
 
 	route.GET("/api/photos", photoController.ListPhotos)
 	route.POST("/api/photos/fetch-unsplash", photoController.FetchUnsplashPhotos)
-
 	route.Run(":8080")
 
 }

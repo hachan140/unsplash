@@ -3,7 +3,7 @@ package model
 import "time"
 
 type User struct {
-	Id          int       `gorm:"column:id"`
+	ID          int       `gorm:"column:id"`
 	Username    string    `gorm:"column:username"`
 	Password    string    `gorm:"column:password"`
 	FullName    string    `gorm:"column:full_name"`

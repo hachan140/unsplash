@@ -15,7 +15,7 @@ type provider struct {
 func NewProvider(db *gorm.DB) Provider {
 	return &provider{
 		photoRepo:      NewPhotoRepository(db),
-		userRepository: NewPhotoRepository(db),
+		userRepository: NewUserRepo(db),
 	}
 }
 

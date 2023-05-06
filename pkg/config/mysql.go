@@ -1,6 +1,10 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/kelseyhightower/envconfig"
+	"log"
+)
 
 type MySQL struct {
 	Host     string `envconfig:"MYSQL_HOST"`
@@ -12,4 +16,12 @@ type MySQL struct {
 
 func (m MySQL) DSN() string {
 	return fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local", m.Username, m.Password, m.Host, m.Port, m.Database)
+}
+
+func NewMySQLConfig() MySQL {
+	var mySQL MySQL
+	if err := envconfig.Process("", &mySQL); err != nil {
+		log.Fatal("error when parsing MySQLConfig, error: ", err)
+	}
+	return mySQL
 }
