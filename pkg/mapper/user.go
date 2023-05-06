@@ -19,7 +19,7 @@ func UserToDTO(u *model.User) *dto.User {
 		return nil
 	}
 	return &dto.User{
-		Id:          u.ID,
+		ID:          u.ID,
 		Username:    u.Username,
 		Password:    u.Password,
 		FullName:    u.FullName,
@@ -33,7 +33,7 @@ func UserToModel(d *dto.User) *model.User {
 		return nil
 	}
 	return &model.User{
-		ID:          d.Id,
+		ID:          d.ID,
 		Username:    d.Username,
 		Password:    d.Password,
 		FullName:    d.FullName,
