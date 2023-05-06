@@ -28,11 +28,16 @@ func (u *userController) CreateUser(c *gin.Context) {
 		})
 		return
 	}
+	err := req.Validate()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	res, err := u.userService.CreateUser(c, req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Message: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, res)
-
 }

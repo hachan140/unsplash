@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type User struct {
 	ID          int       `json:"id"`
@@ -18,6 +21,23 @@ type CreateUserRequest struct {
 	FullName    string `json:"full_name"`
 	PhoneNumber string `json:"phone_number"`
 }
+
+func (r CreateUserRequest) Validate() error {
+	if r.Username == "" {
+		return errors.New("invalid username")
+	}
+	if r.Password == "" {
+		return errors.New("invalid password")
+	}
+	if r.FullName == "" {
+		return errors.New("invalid fullname")
+	}
+	if r.PhoneNumber == "" {
+		return errors.New("invalid phonenumber")
+	}
+	return nil
+}
+
 type CreateUserResponse struct {
 	Data    *User  `json:"data"`
 	Message string `json:"message"`
