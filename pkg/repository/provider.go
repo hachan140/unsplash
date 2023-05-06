@@ -4,18 +4,24 @@ import "gorm.io/gorm"
 
 type Provider interface {
 	PhotoRepository() PhotoRepository
+	UserRepository() UserRepository
 }
 
 type provider struct {
-	photoRepo PhotoRepository
+	photoRepo      PhotoRepository
+	userRepository UserRepository
 }
 
 func NewProvider(db *gorm.DB) Provider {
 	return &provider{
-		photoRepo: NewPhotoRepository(db),
+		photoRepo:      NewPhotoRepository(db),
+		userRepository: NewPhotoRepository(db),
 	}
 }
 
 func (p *provider) PhotoRepository() PhotoRepository {
 	return p.photoRepo
+}
+func (p *provider) UserRepository() UserRepository {
+	return p.userRepository
 }

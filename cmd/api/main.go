@@ -57,9 +57,8 @@ func main() {
 	}
 
 	repoProvider := repository.NewProvider(db)
-
-	photoService := service.NewPhotoService(repoProvider, unsplashAdapter)
-	photoController := controller.NewPhotoController(photoService)
+	serviceProvider := service.NewProvider(repoProvider, unsplashAdapter)
+	photoController := controller.NewPhotoController(serviceProvider)
 
 	route := gin.Default()
 

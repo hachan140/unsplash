@@ -16,9 +16,9 @@ type photoController struct {
 	photoService service.PhotoService
 }
 
-func NewPhotoController(photoService service.PhotoService) PhotoController {
+func NewPhotoController(serviceProvider service.Provider) PhotoController {
 	return &photoController{
-		photoService: photoService,
+		photoService: serviceProvider.PhotoService(),
 	}
 }
 
