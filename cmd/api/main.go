@@ -30,30 +30,26 @@ tạo service và controller tương ứng gồm các function: CreateUser ( use
 */
 
 func main() {
-
 	configProvider := config.NewConfigProvider()
 	unsplashAdapter, err := unsplash.NewAdapter(configProvider.UnsplashConfig().APIKey)
 	if err != nil {
 		panic(err)
 	}
-
 	db, err := connection.NewMySQLConnection(configProvider.MySQL())
 	if err != nil {
 		panic(err)
 	}
-
 	if err := db.AutoMigrate(model.Photo{}); err != nil {
 		panic(err)
 	}
-
 	repoProvider := repository.NewProvider(db)
 	serviceProvider := service.NewProvider(repoProvider, unsplashAdapter)
-	photoController := controller.NewPhotoController(serviceProvider)
+	controllerProvider := controller.NewProvider(serviceProvider)
 
 	route := gin.Default()
-
-	route.GET("/api/photos", photoController.ListPhotos)
-	route.POST("/api/photos/fetch-unsplash", photoController.FetchUnsplashPhotos)
+	route.POST("/api/user", controllerProvider.UserController().CreateUser)
+	route.GET("/api/photos", controllerProvider.PhotoController().ListPhotos)
+	route.POST("/api/photos/fetch-unsplash", controllerProvider.PhotoController().FetchUnsplashPhotos)
 	route.Run(":8080")
 
 }

@@ -12,6 +12,7 @@ type userRepository struct {
 }
 type UserRepository interface {
 	Insert(ctx context.Context, data *model.User) error
+	FindUserByUsername(ctx context.Context, username string) (*model.User, error)
 }
 
 func NewUserRepo(db *gorm.DB) UserRepository {
@@ -26,4 +27,13 @@ func (u *userRepository) Insert(ctx context.Context, data *model.User) error {
 		return err
 	}
 	return nil
+}
+
+func (u *userRepository) FindUserByUsername(ctx context.Context, username string) (*model.User, error) {
+	var user *model.User
+	if err := u.db.WithContext(ctx).Where("username = ?", username).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
+
 }

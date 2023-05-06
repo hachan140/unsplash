@@ -21,5 +21,5 @@ func (p *provider) PhotoController() PhotoController {
 	return p.photoController
 }
 func (p *provider) UserController() UserController {
-	return p.UserController()
+	return p.userController
 }
