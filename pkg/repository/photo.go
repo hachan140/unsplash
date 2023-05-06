@@ -29,9 +29,6 @@ func (p *photoRepository) Insert(ctx context.Context, data *model.Photo) error {
 	return nil
 }
 
-// #TODO: implement FindOneByID and FindMany function for repository
-// FindMany param: page, limit
-
 func (p *photoRepository) FindOneByID(ctx context.Context, id string) (*model.Photo, error) {
 	var photo model.Photo
 	if err := p.db.WithContext(ctx).Where("id=?", id).First(&photo).Error; err != nil {

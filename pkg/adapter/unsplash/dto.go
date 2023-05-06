@@ -1,4 +1,4 @@
-package adapter
+package unsplash
 
 type Urls struct {
 	Raw     string `json:"raw"`
@@ -19,5 +19,13 @@ type Photo struct {
 type ListPhotoRequest struct {
 	Page    int
 	PerPage int
-	OrderBy string
+	OrderBy PhotoOrder
 }
+
+type PhotoOrder string
+
+const (
+	PhotoOrderLatest  PhotoOrder = "latest"
+	PhotoOrderOldest  PhotoOrder = "oldest"
+	PhotoOrderPopular PhotoOrder = "popular"
+)
