@@ -50,6 +50,6 @@ func main() {
 	route.POST("/api/user", controllerProvider.UserController().CreateUser)
 	route.GET("/api/photos", controllerProvider.PhotoController().ListPhotos)
 	route.POST("/api/photos/fetch-unsplash", controllerProvider.PhotoController().FetchUnsplashPhotos)
+	route.GET("/api/users", controllerProvider.UserController().ListUsersByUsernameAndPhoneNumber)
 	route.Run(":8080")
-
 }

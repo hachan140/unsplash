@@ -42,3 +42,14 @@ type CreateUserResponse struct {
 	Data    *User  `json:"data"`
 	Message string `json:"message"`
 }
+
+type ListUsersByUsernameAndPhoneNumberRequest struct {
+	Page        int    `form:"page"`
+	Limit       int    `form:"limit"`
+	Username    string `form:"username"`
+	PhoneNumber string `form:"phone_number"`
+}
+type ListUserByUsernameAndPhoneNumberResponse struct {
+	Data    []*User `json:"data"`
+	Message string  `json:"message"`
+}

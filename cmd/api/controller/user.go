@@ -12,6 +12,7 @@ type userController struct {
 }
 type UserController interface {
 	CreateUser(c *gin.Context)
+	ListUsersByUsernameAndPhoneNumber(c *gin.Context)
 }
 
 func NewUserController(serviceProvider service.Provider) UserController {
@@ -35,6 +36,20 @@ func (u *userController) CreateUser(c *gin.Context) {
 	}
 
 	res, err := u.userService.CreateUser(c, req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Message: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+func (u *userController) ListUsersByUsernameAndPhoneNumber(c *gin.Context) {
+	var req dto.ListUsersByUsernameAndPhoneNumberRequest
+	if err := c.ShouldBind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "error when parsing ListUsersByUsernameAndPhoneNumber request"})
+		return
+	}
+	res, err := u.userService.ListUsersByUsernameAndPhoneNumber(c, req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Message: err.Error()})
 		return

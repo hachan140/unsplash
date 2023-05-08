@@ -14,6 +14,7 @@ type userService struct {
 }
 type UserService interface {
 	CreateUser(ctx context.Context, req dto.CreateUserRequest) (*dto.CreateUserResponse, error)
+	ListUsersByUsernameAndPhoneNumber(ctx context.Context, req dto.ListUsersByUsernameAndPhoneNumberRequest) (*dto.ListUserByUsernameAndPhoneNumberResponse, error)
 }
 
 func NewUserService(repoProvider repository.Provider) UserService {
@@ -48,4 +49,17 @@ func (u *userService) CreateUser(ctx context.Context, req dto.CreateUserRequest)
 		Message: "success",
 	}
 	return res, nil
+}
+
+func (u *userService) ListUsersByUsernameAndPhoneNumber(ctx context.Context, req dto.ListUsersByUsernameAndPhoneNumberRequest) (*dto.ListUserByUsernameAndPhoneNumberResponse, error) {
+	users, err := u.userRepo.ListUsersByUsernameAndPhoneNumber(ctx, req.Page, req.Limit, req.Username, req.PhoneNumber)
+	if err != nil {
+		return nil, err
+	}
+	res := &dto.ListUserByUsernameAndPhoneNumberResponse{
+		Data:    mapper.UsersToDTOs(users),
+		Message: "success",
+	}
+	return res, nil
+
 }

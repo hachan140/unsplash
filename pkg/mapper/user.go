@@ -6,7 +6,7 @@ import (
 )
 
 func UsersToDTOs(ms []*model.User) []*dto.User {
-	ds := make([]*dto.User, len(ms))
+	ds := make([]*dto.User, 0, len(ms))
 	for _, m := range ms {
 		d := UserToDTO(m)
 		ds = append(ds, d)
