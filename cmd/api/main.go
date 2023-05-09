@@ -51,5 +51,7 @@ func main() {
 	route.GET("/api/photos", controllerProvider.PhotoController().ListPhotos)
 	route.POST("/api/photos/fetch-unsplash", controllerProvider.PhotoController().FetchUnsplashPhotos)
 	route.GET("/api/users", controllerProvider.UserController().ListUsersByUsernameAndPhoneNumber)
+	route.DELETE("/api/user", controllerProvider.UserController().DeleteUserByUsername)
+	route.DELETE("/api/photo", controllerProvider.PhotoController().DeletePhotoByID)
 	route.Run(":8080")
 }

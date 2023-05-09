@@ -49,7 +49,25 @@ type ListUsersByUsernameAndPhoneNumberRequest struct {
 	Username    string `form:"username"`
 	PhoneNumber string `form:"phone_number"`
 }
+
+func (l *ListUsersByUsernameAndPhoneNumberRequest) Validate() error {
+	if l.Limit <= 0 {
+		return errors.New("invalid limit")
+	}
+	if l.Page <= 0 {
+		return errors.New("invalid page")
+	}
+	return nil
+}
+
 type ListUserByUsernameAndPhoneNumberResponse struct {
 	Data    []*User `json:"data"`
 	Message string  `json:"message"`
+}
+
+type DeleteUserByUsernameRequest struct {
+	Username string `form:"username"`
+}
+type DeleteUserByUsernameResponse struct {
+	Message string `json:"message"`
 }

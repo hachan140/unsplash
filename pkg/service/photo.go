@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gin_unsplash/pkg/adapter/unsplash"
 	"gin_unsplash/pkg/dto"
+	"gin_unsplash/pkg/httperror"
 	"gin_unsplash/pkg/mapper"
 	"gin_unsplash/pkg/model"
 	"gin_unsplash/pkg/repository"
@@ -14,6 +15,7 @@ import (
 type PhotoService interface {
 	ListPhotos(ctx context.Context, req dto.ListPhotosRequest) (*dto.ListPhotosResponse, error)
 	FetchUnsplashPhotos(ctx context.Context, req dto.FetchUnsplashPhotosRequest) (*dto.FetchUnsplashPhotosResponse, error)
+	DeletePhotoByID(ctx context.Context, req dto.DeletePhotoByIDRequest) (*dto.DeletePhotoByIDResponse, error)
 }
 
 type photoService struct {
@@ -56,7 +58,7 @@ func (p *photoService) FetchUnsplashPhotos(ctx context.Context, req dto.FetchUns
 	for _, unsplashPhoto := range unsplashPhotos {
 		// check duplicate
 		_, err := p.photoRepo.FindOneByID(ctx, unsplashPhoto.ID)
-		// if error happen and error != record not found -> real error
+		// if httperror happen and httperror != record not found -> real httperror
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return nil, err
 		}
@@ -86,4 +88,19 @@ func (p *photoService) FetchUnsplashPhotos(ctx context.Context, req dto.FetchUns
 		Message: message,
 	}, nil
 
+}
+
+func (p *photoService) DeletePhotoByID(ctx context.Context, req dto.DeletePhotoByIDRequest) (*dto.DeletePhotoByIDResponse, error) {
+	_, err := p.photoRepo.FindOneByID(ctx, req.Id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, httperror.BadRequest("record not found")
+		}
+		return nil, err
+
+	}
+	if err := p.photoRepo.DeletePhotoByID(ctx, req.Id); err != nil {
+		return nil, err
+	}
+	return &dto.DeletePhotoByIDResponse{Message: "delete success"}, nil
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"gin_unsplash/pkg/dto"
+	"gin_unsplash/pkg/httperror"
 	"gin_unsplash/pkg/mapper"
 	"gin_unsplash/pkg/model"
 	"gin_unsplash/pkg/repository"
@@ -15,6 +16,7 @@ type userService struct {
 type UserService interface {
 	CreateUser(ctx context.Context, req dto.CreateUserRequest) (*dto.CreateUserResponse, error)
 	ListUsersByUsernameAndPhoneNumber(ctx context.Context, req dto.ListUsersByUsernameAndPhoneNumberRequest) (*dto.ListUserByUsernameAndPhoneNumberResponse, error)
+	DeleteUserByUsername(ctx context.Context, req dto.DeleteUserByUsernameRequest) (*dto.DeleteUserByUsernameResponse, error)
 }
 
 func NewUserService(repoProvider repository.Provider) UserService {
@@ -22,17 +24,50 @@ func NewUserService(repoProvider repository.Provider) UserService {
 		userRepo: repoProvider.UserRepository(),
 	}
 }
+func (u *userService) validateDuplicateUsername(ctx context.Context, username string) error {
+	_, err := u.userRepo.FindUserByUsername(ctx, username)
+	if err == nil {
+		return httperror.BadRequest("duplicate username")
+	}
+	if err != gorm.ErrRecordNotFound {
+		return nil
+	}
+	return nil
+}
 
-func (u *userService) CreateUser(ctx context.Context, req dto.CreateUserRequest) (*dto.CreateUserResponse, error) {
+func (u *userService) validatePhoneNumber(ctx context.Context, phone_number string) error {
+	_, err := u.userRepo.FindUserByPhoneNumber(ctx, phone_number)
+	if err == nil {
+		return httperror.BadRequest("duplicate phone number")
+	}
+	if err != gorm.ErrRecordNotFound {
+		return err
+	}
+	return nil
+}
+
+func (u *userService) DeleteUserByUsername(ctx context.Context, req dto.DeleteUserByUsernameRequest) (*dto.DeleteUserByUsernameResponse, error) {
 	_, err := u.userRepo.FindUserByUsername(ctx, req.Username)
-	if err != nil && err != gorm.ErrRecordNotFound {
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, httperror.BadRequest("record not found")
+		}
 		return nil, err
 	}
-	if err == nil {
-		return &dto.CreateUserResponse{
-			Data:    nil,
-			Message: "duplicate username",
-		}, nil
+	if err := u.userRepo.DeleteUserByUsername(ctx, req.Username); err != nil {
+		return nil, err
+	}
+	return &dto.DeleteUserByUsernameResponse{Message: "delete success"}, nil
+
+}
+
+func (u *userService) CreateUser(ctx context.Context, req dto.CreateUserRequest) (*dto.CreateUserResponse, error) {
+	if err := u.validateDuplicateUsername(ctx, req.Username); err != nil {
+		return nil, err
+	}
+	if err := u.validatePhoneNumber(ctx, req.PhoneNumber); err != nil {
+		return nil, err
 	}
 	user := &model.User{
 
@@ -56,10 +91,10 @@ func (u *userService) ListUsersByUsernameAndPhoneNumber(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+
 	res := &dto.ListUserByUsernameAndPhoneNumberResponse{
 		Data:    mapper.UsersToDTOs(users),
 		Message: "success",
 	}
 	return res, nil
-
 }

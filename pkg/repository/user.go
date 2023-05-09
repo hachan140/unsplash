@@ -13,6 +13,8 @@ type userRepository struct {
 type UserRepository interface {
 	Insert(ctx context.Context, data *model.User) error
 	FindUserByUsername(ctx context.Context, username string) (*model.User, error)
+	FindUserByPhoneNumber(ctx context.Context, phone_number string) (*model.User, error)
+	DeleteUserByUsername(ctx context.Context, username string) error
 	ListUsersByUsernameAndPhoneNumber(ctx context.Context, page int, limit int, username string, phoneNumber string) ([]*model.User, error)
 }
 
@@ -38,6 +40,14 @@ func (u *userRepository) FindUserByUsername(ctx context.Context, username string
 	return user, nil
 
 }
+func (u *userRepository) FindUserByPhoneNumber(ctx context.Context, phone_number string) (*model.User, error) {
+	var user *model.User
+	//cho err co p bad request kh a????alooooo
+	if err := u.db.WithContext(ctx).Where("phone_number = ?", phone_number).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
+}
 
 func (u *userRepository) ListUsersByUsernameAndPhoneNumber(ctx context.Context, page int, limit int, username string, phoneNumber string) ([]*model.User, error) {
 	var users []*model.User
@@ -49,4 +59,11 @@ func (u *userRepository) ListUsersByUsernameAndPhoneNumber(ctx context.Context, 
 		return nil, err
 	}
 	return users, nil
+}
+func (u *userRepository) DeleteUserByUsername(ctx context.Context, username string) error {
+
+	if err := u.db.WithContext(ctx).Model(model.User{}).Where("username = ?", username).Delete(model.User{}).Error; err != nil {
+		return err
+	}
+	return nil
 }

@@ -30,3 +30,9 @@ type FetchUnsplashPhotosResponse struct {
 	Data    []*Photo `json:"data"`
 	Message string   `json:"message"`
 }
+type DeletePhotoByIDRequest struct {
+	Id string `json:"id"`
+}
+type DeletePhotoByIDResponse struct {
+	Message string `json:"message"`
+}

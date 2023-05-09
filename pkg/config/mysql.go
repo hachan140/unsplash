@@ -21,7 +21,7 @@ func (m MySQL) DSN() string {
 func NewMySQLConfig() MySQL {
 	var mySQL MySQL
 	if err := envconfig.Process("", &mySQL); err != nil {
-		log.Fatal("error when parsing MySQLConfig, error: ", err)
+		log.Fatal("httperror when parsing MySQLConfig, httperror: ", err)
 	}
 	return mySQL
 }

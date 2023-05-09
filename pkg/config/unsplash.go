@@ -12,7 +12,7 @@ type UnsplashConfig struct {
 func NewUnsplashConfig() UnsplashConfig {
 	var unsplashConfig UnsplashConfig
 	if err := envconfig.Process("", &unsplashConfig); err != nil {
-		log.Fatal("error when parsing UnsplashConfig, error:", err)
+		log.Fatal("httperror when parsing UnsplashConfig, httperror:", err)
 	}
 	return unsplashConfig
 }
